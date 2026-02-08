@@ -101,7 +101,7 @@ const client = new Client({
 
 client.on("ready", () => {
 
-    console.log("✅ Bot Ready:", client.user.tag);
+    console.log("✅ บอทพร้อมใช้งานแล้ว:", client.user.tag);
 
     heartbeat();
 
@@ -117,7 +117,7 @@ client.on("ready", () => {
         initializeCountCase(client, COMMAND_CHANNEL_ID);
         initializeLogListener(client);
 
-        console.log("📦 Modules loaded");
+        console.log("📦 โหลดโมดูลเรียบร้อยแล้ว");
     } catch (e) {
         console.error("Module Error:", e);
         safeRestart("Module Init Failed");
