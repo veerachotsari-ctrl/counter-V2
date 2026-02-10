@@ -443,11 +443,13 @@ function initializeCountCase(client, commandChannelId) {
             );
             await interaction.showModal(modal);
             return;
-        }
+          }
 
-        if (interaction.isModalSubmit() && interaction.customId === CONFIG_MODAL_ID) {
-            await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-            try {
+               if (interaction.isModalSubmit() && interaction.customId === CONFIG_MODAL_ID) {
+                      // กัน interaction หมดอายุก่อน
+                if (interaction.replied || interaction.deferred) return;
+                     await interaction.deferReply({ ephemeral: true });
+                try {
                 CONFIG.SPREADSHEET_ID = interaction.fields.getTextInputValue('spreadsheet_id_input');
                 CONFIG.SHEET_NAME = interaction.fields.getTextInputValue('sheet_name_input');
                 const rawIds = interaction.fields.getTextInputValue('channel_list_input');
