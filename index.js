@@ -94,6 +94,50 @@ const client = new Client({
     ],
 });
 
+// ===============================
+// 🔍 Discord Reconnect Debug
+// ===============================
+
+// กำลัง reconnect
+client.on("shardReconnecting", (id) => {
+    console.warn(`🔄 Reconnecting... (Shard ${id})`);
+    console.warn("📌 Time:", new Date().toLocaleString());
+});
+
+// หลุดจาก Discord
+client.on("shardDisconnect", (event, id) => {
+    console.error(`❌ Disconnected (Shard ${id})`);
+
+    if (event) {
+        console.error("📌 Code:", event.code);
+        console.error("📌 Reason:", event.reason || "No reason");
+        console.error("📌 Clean:", event.wasClean);
+    }
+
+    console.error("📌 Time:", new Date().toLocaleString());
+});
+
+// WebSocket / Network error
+client.on("shardError", (error, id) => {
+    console.error(`🔥 Shard Error (Shard ${id})`);
+    console.error("📌 Message:", error.message);
+});
+
+// Session หมดอายุ / Resume ไม่ได้
+client.on("invalidated", () => {
+    console.error("♻️ Session Invalidated (Token / Resume Failed)");
+});
+
+// Client error ทั่วไป
+client.on("error", (err) => {
+    console.error("🚨 Discord Client Error:", err.message);
+});
+
+// ⚠️ เพิ่มอันนี้ (สำคัญ)
+client.on("warn", (info) => {
+    console.warn("⚠️ Discord Warning:", info);
+});
+
 
 /* =====================================================
    💚 HEARTBEAT SOURCES
@@ -131,27 +175,6 @@ client.on("interactionCreate", () => {
 
 client.on("messageCreate", () => {
     heartbeat();
-});
-
-
-/* =====================================================
-   ⚠️ DISCORD WARN / ERROR
-===================================================== */
-
-client.on("error", err => {
-    console.error("Client Error:", err);
-});
-
-client.on("warn", warn => {
-    console.warn("Warn:", warn);
-});
-
-client.on("shardDisconnect", () => {
-    console.log("🔌 Disconnected");
-});
-
-client.on("shardReconnecting", () => {
-    console.log("🔄 Reconnecting...");
 });
 
 
