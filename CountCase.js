@@ -162,15 +162,27 @@ async function batchUpdateAllColumns(masterCountMap) {
     }
     rows.push(...appendedRowsData);
 
-    if (updates.length > 0) {
+if (updates.length > 0) {
+
+    try {
+
         await gsapi.spreadsheets.values.batchUpdate({
             spreadsheetId: CONFIG.SPREADSHEET_ID,
             requestBody: {
                 valueInputOption: "RAW",
-                data: updates.map(u => ({ range: u.range, values: u.values })),
+                data: updates.map(u => ({
+                    range: u.range,
+                    values: u.values
+                })),
             }
         });
+
+    } catch (err) {
+
+        console.error("❌ Google Error:", err.message);
+        return; // กันไม่ให้บอทพัง
     }
+}
     await new Promise((r) => setTimeout(r, CONFIG.BATCH_DELAY));
 }
 
@@ -380,13 +392,15 @@ function initializeCountCase(client, commandChannelId) {
         return;
     }
         if (interaction.isButton() && interaction.customId === COUNT_BUTTON_ID) {
+            await interaction.deferReply({ flags: MessageFlags.Ephemeral });
                 const user = interaction.user;
                 const member = interaction.member;
                 const nickname = member?.displayName || user.username;
             console.log(`📊 [COUNT START] ${nickname} (${user.tag}) กดเริ่มนับข้อความเก่า`);
 
             try {
-                await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+                
                 const activeChannelIds = CONFIG.CHANNEL_IDS.slice(0, 4); // รองรับสูงสุด 4 ช่อง
                 if (!CONFIG.SPREADSHEET_ID || !CONFIG.SHEET_NAME || activeChannelIds.length === 0) {
                     return await interaction.editReply({ content: "❌ **การตั้งค่าไม่สมบูรณ์!**" });
