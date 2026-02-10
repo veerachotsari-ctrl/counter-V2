@@ -21,11 +21,11 @@ function safeRestart(reason = "Unknown") {
     restartCount++;
 
     if (restartCount > 8) {
-        console.error("🚫 Restart limit reached (15/day). Stop reboot.");
+        console.error("🚫 Restart limit reached (8/day). Stop reboot.");
         return;
     }
 
-    console.error(`♻️ Restarting (${restartCount}/15) | Reason: ${reason}`);
+    console.error(`♻️ Restarting (${restartCount}/8) | Reason: ${reason}`);
 
     // Delay กัน Discord rate limit
     setTimeout(() => {
@@ -201,10 +201,7 @@ client.on("interactionCreate", async interaction => {
         });
     }
 
-    await interaction.reply({
-        content: "⏳ กำลังบันทึกข้อมูล...",
-        flags: MessageFlags.Ephemeral
-    });
+   await interaction.deferReply({ ephemeral: true });
 
     try {
 
