@@ -157,10 +157,18 @@ async function saveLog(name, date, time, id, duration) {
 
     if (data.length === 0) return;
 
+    try {
+
     await sheets.spreadsheets.values.batchUpdate({
         spreadsheetId,
         resource: { valueInputOption: "USER_ENTERED", data },
     });
+
+} catch (err) {
+
+    console.error("❌ Google Sheet Error:", err);
+    return false; // บอกว่าเซฟไม่สำเร็จ แต่ไม่พัง
+}
 
     console.log(`✔ Updated Row ${row} → ${name} [${date}] | Total in ${dayCol}: ${duration} Added`);
 }
