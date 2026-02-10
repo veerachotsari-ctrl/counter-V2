@@ -20,7 +20,7 @@ function safeRestart(reason = "Unknown") {
 
     restartCount++;
 
-    if (restartCount > 15) {
+    if (restartCount > 8) {
         console.error("🚫 Restart limit reached (15/day). Stop reboot.");
         return;
     }
@@ -37,12 +37,12 @@ function safeRestart(reason = "Unknown") {
 // กัน Crash
 process.on("uncaughtException", err => {
     console.error("🔥 Uncaught Exception:", err);
-    safeRestart("Uncaught Exception");
+    // ไม่ restart ทันที
 });
 
 process.on("unhandledRejection", err => {
     console.error("🔥 Unhandled Rejection:", err);
-    safeRestart("Unhandled Rejection");
+    // ไม่ restart ทันที
 });
 
 
@@ -63,9 +63,9 @@ setInterval(() => {
     const diff = Date.now() - lastAlive;
 
     // เงียบเกิน 15 นาที = พังจริง
-    if (diff > 15 * 60 * 1000) {
-        safeRestart("Watchdog Timeout");
-    }
+    //if (diff > 15 * 60 * 1000) {
+    //    safeRestart("Watchdog Timeout");
+    //}
 
 }, 60 * 1000);
 
@@ -246,5 +246,5 @@ client.login(token).catch(err => {
     // Login fail ไม่รีรัว
     setTimeout(() => {
         safeRestart("Login Failed");
-    }, 30000);
+    }, 120000);
 });
