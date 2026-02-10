@@ -180,7 +180,7 @@ client.on("interactionCreate", async interaction => {
 
     await interaction.reply({
         content: "⏳ กำลังบันทึกข้อมูล...",
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
     });
 
     try {
