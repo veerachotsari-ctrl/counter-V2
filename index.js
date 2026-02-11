@@ -101,7 +101,13 @@ const client = new Client({
 // กำลัง reconnect
 client.on("shardReconnecting", (id) => {
     console.warn(`🔄 Reconnecting... (Shard ${id})`);
-    console.warn("📌 Time:", new Date().toLocaleString());
+
+    const thaiTime = new Date().toLocaleString("th-TH", {
+        timeZone: "Asia/Bangkok",
+        hour12: false
+    });
+
+    console.warn("📌 Time:", thaiTime);
 });
 
 // หลุดจาก Discord
@@ -114,8 +120,14 @@ client.on("shardDisconnect", (event, id) => {
         console.error("📌 Clean:", event.wasClean);
     }
 
-    console.error("📌 Time:", new Date().toLocaleString());
+    const thaiTime = new Date().toLocaleString("th-TH", {
+        timeZone: "Asia/Bangkok",
+        hour12: false
+    });
+
+    console.error("📌 Time:", thaiTime);
 });
+
 
 // WebSocket / Network error
 client.on("shardError", (error, id) => {
