@@ -30,32 +30,6 @@ async function getSheetsClientCached() {
 }
 
 // -----------------------------
-// Time Helpers (บวกเวลาสะสม)
-// -----------------------------
-function timeToSeconds(timeStr) {
-    if (!timeStr || !timeStr.includes(":")) return 0;
-    const parts = timeStr.split(":").map(Number);
-    return (parts[0] * 3600) + (parts[1] * 60) + (parts[2] || 0);
-}
-
-function secondsToTime(totalSeconds) {
-    const h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-    const m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-    const s = (totalSeconds % 60).toString().padStart(2, '0');
-    return `${h}:${m}:${s}`;
-}
-
-function getDayColumn(dateString) {
-    try {
-        const [d, m, y] = dateString.split("/");
-        const dateObj = new Date(y, m - 1, d);
-        const day = dateObj.getDay(); // 0=อา, 1=จ...
-        const mapping = { 1: "K", 2: "L", 3: "M", 4: "N", 5: "O", 6: "P", 0: "Q" };
-        return mapping[day];
-    } catch (e) { return null; }
-}
-
-// -----------------------------
 // SMART row finder (Logic เดิม)
 // -----------------------------
 async function findRowSmart(sheets, spreadsheetId, sheetName, name) {
@@ -126,7 +100,6 @@ async function saveLog(name, date, time, id, duration) {
 
     const sheets = google.sheets({ version: "v4", auth });
     const { row } = await findRowSmart(sheets, spreadsheetId, sheetName, name);
-    const dayCol = getDayColumn(date);
     const data = [];
 
     // 1. บันทึก ชื่อ, วันที่, เวลา (ช่อง C, D, E)
@@ -138,21 +111,6 @@ async function saveLog(name, date, time, id, duration) {
     // 2. บันทึก ID (ช่อง G)
     if (id) {
         data.push({ range: `${sheetName}!G${row}`, values: [[id]] });
-    }
-
-    // 3. บวกเวลาสะสม (ช่อง K-Q ตามวัน)
-    if (duration && dayCol) {
-        const currentCell = await sheets.spreadsheets.values.get({
-            spreadsheetId,
-            range: `${sheetName}!${dayCol}${row}`,
-        });
-        const oldTimeStr = currentCell.data.values?.[0]?.[0] || "00:00:00";
-        const newTotal = secondsToTime(timeToSeconds(oldTimeStr) + timeToSeconds(duration));
-        
-        data.push({
-            range: `${sheetName}!${dayCol}${row}`,
-            values: [[newTotal]],
-        });
     }
 
     if (data.length === 0) return;
@@ -170,7 +128,7 @@ async function saveLog(name, date, time, id, duration) {
     return false; // บอกว่าเซฟไม่สำเร็จ แต่ไม่พัง
 }
 
-    console.log(`✔ Updated Row ${row} → ${name} [${date}] | Total in ${dayCol}: ${duration} Added`);
+    console.log(`✔ Updated Row ${row} → ${name} [${date}]`);
 }
 
 // -----------------------------
